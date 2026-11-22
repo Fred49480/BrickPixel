@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BrickPixel — maquette fonctionnelle</title>
+<style>
+:root {
+  --ink:#20252b; --muted:#68717b; --line:#dce1e6; --paper:#f5f6f7;
+  --panel:#fff; --accent:#2457a6; --accent-soft:#eaf1fc; --radius:14px;
+}
+* { box-sizing:border-box; }
+body { margin:0; color:var(--ink); background:var(--paper); font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif; }
+button,input,select { font:inherit; }
+button { cursor:pointer; }
+header { background:#202b3a; color:#fff; padding:22px max(22px,calc((100vw - 1400px)/2)); }
+header .topline { display:flex; align-items:center; justify-content:space-between; gap:20px; }
+.brand { font-size:1.35rem; font-weight:800; letter-spacing:.02em; }
+.brand span { color:#f4c542; }
+header p { margin:5px 0 0; color:#d4dce6; }
+.badge { border:1px solid #718096; border-radius:99px; padding:5px 10px; color:#e7edf5; font-size:.8rem; white-space:nowrap; }
+main { max-width:1400px; margin:24px auto 50px; padding:0 20px; }
+.steps { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:20px; }
+.step { padding:11px 14px; border:1px solid var(--line); border-radius:11px; background:#fff; color:var(--muted); }
+.step strong { display:block; color:var(--ink); font-size:.92rem; }
+.step.active { border-color:var(--accent); background:var(--accent-soft); }
+.layout { display:grid; grid-template-columns:330px minmax(0,1fr); gap:20px; align-items:start; }
+.panel { background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:18px; box-shadow:0 2px 8px #17202b08; }
+h2 { font-size:1.05rem; margin:0 0 14px; }
+h3 { font-size:.95rem; margin:18px 0 9px; }
+label { display:block; font-weight:650; font-size:.88rem; margin:12px 0 5px; }
+input[type="number"],select,input[type="file"] { width:100%; border:1px solid #cbd2da; border-radius:8px; padding:9px 10px; background:#fff; }
+input[type="file"] { padding:7px; font-size:.84rem; }
+input[type="checkbox"] { accent-color:var(--accent); }
+.field-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.help { color:var(--muted); font-size:.79rem; margin:5px 0 0; }
+.actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:15px; }
+.btn { border:1px solid #cbd2da; border-radius:8px; padding:9px 12px; background:#fff; color:var(--ink); font-weight:650; }
+.btn.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+.btn:disabled { opacity:.45; cursor:not-allowed; }
+.status { margin-top:12px; padding:9px 11px; border-radius:8px; background:#f0f3f6; color:#47515d; font-size:.82rem; }
+.status.error { background:#fff0ef; color:#a12b20; }
+.workspace { min-width:0; }
+.workspace-head { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; }
+.workspace-head h2 { margin:0; }
+.tabs { display:flex; gap:6px; flex-wrap:wrap; }
+.tab { border:1px solid var(--line); background:#fff; padding:7px 10px; border-radius:8px; font-size:.83rem; }
+.tab[aria-selected="true"] { background:var(--accent-soft); border-color:#9bb7e4; color:#173f7b; font-weight:700; }
+.preview-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+.preview-card { border:1px solid var(--line); border-radius:12px; padding:12px; min-width:0; background:#fff; }
+.preview-card h3 { margin:0 0 8px; }
+.canvas-wrap { min-height:190px; display:flex; justify-content:center; align-items:center; background:
+  linear-gradient(45deg,#edf0f2 25%,transparent 25%),linear-gradient(-45deg,#edf0f2 25%,transparent 25%),
+  linear-gradient(45deg,transparent 75%,#edf0f2 75%),linear-gradient(-45deg,transparent 75%,#edf0f2 75%);
+  background-size:18px 18px; background-position:0 0,0 9px,9px -9px,-9px 0;
+  border-radius:8px; overflow:auto; padding:8px;
+}
+canvas { max-width:100%; max-height:340px; object-fit:contain; image-rendering:pixelated; }
+.placeholder { color:#89929d; text-align:center; padding:35px 12px; font-size:.86rem; }
+.preview-meta { color:var(--muted); font-size:.78rem; margin:8px 0 0; }
+.results { margin-top:16px; }
+.results-head { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+.results-head h2 { margin:0; }
+.summary { color:var(--muted); font-size:.82rem; }
+.result-layout { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(260px,.8fr); gap:14px; margin-top:12px; }
+.tiles { display:grid; grid-template-columns:repeat(auto-fill,minmax(112px,1fr)); gap:9px; }
+.tile { border:1px solid var(--line); border-radius:10px; background:#fff; padding:9px; text-align:left; }
+.tile.selected { outline:2px solid var(--accent); border-color:var(--accent); background:var(--accent-soft); }
+.tile canvas { display:block; width:100%; height:auto; max-height:none; margin-bottom:7px; background:#f3f4f5; }
+.tile strong { display:block; font-size:.83rem; }
+.tile small { color:var(--muted); }
+.detail { border:1px solid var(--line); border-radius:10px; padding:13px; background:#fff; }
+.detail-top { display:flex; justify-content:space-between; gap:8px; align-items:center; }
+.detail-top h3 { margin:0; }
+.detail canvas { display:block; width:min(100%,340px); height:auto; margin:12px auto; border:1px solid var(--line); }
+table { width:100%; border-collapse:collapse; font-size:.82rem; }
+th,td { text-align:left; padding:6px 5px; border-bottom:1px solid #edf0f2; }
+th:last-child,td:last-child { text-align:right; }
+.swatch { display:inline-block; width:13px; height:13px; border:1px solid #0002; border-radius:3px; vertical-align:-2px; margin-right:6px; }
+.empty { padding:20px; text-align:center; color:var(--muted); border:1px dashed #cbd2da; border-radius:10px; }
+footer { color:var(--muted); font-size:.78rem; margin-top:20px; }
+@media(max-width:900px) { .layout{grid-template-columns:1fr;} .preview-grid{grid-template-columns:1fr 1fr;} }
+@media(max-width:620px) { .steps{grid-template-columns:1fr 1fr;} .preview-grid,.result-layout{grid-template-columns:1fr;} header .topline{align-items:flex-start; flex-direction:column;} }
+@media print {
+  body { background:#fff; }
+  header,.steps,.controls,.workspace-head,.preview-grid,.tiles,.results-head .actions,footer { display:none !important; }
+  main { margin:0; padding:0; max-width:none; }
+  .layout { display:block; }
+  .layout > aside { display:none; }
+  .panel,.detail { border:0; box-shadow:none; padding:0; }
+  .results { margin:0; }
+  .result-layout { display:block; }
+  .detail { display:block; }
+  .detail canvas { max-width:75mm; max-height:75mm; image-rendering:pixelated; }
+  .detail table { max-width:100mm; }
+  .print-title { display:block !important; }
+}
+.print-title { display:none; }
+</style>
+</head>
+<body>
+<header>
+  <div class="topline">
+    <div><div class="brand">BRICK<span>PIXEL</span></div><p>Transformer une photographie en mosaïque de briques LEGO</p></div>
+    <div class="badge">Maquette fonctionnelle · version 0.1</div>
+  </div>
+</header>
+<main>
+  <nav class="steps" aria-label="Étapes du projet">
+    <div class="step active"><strong>1 · Importer</strong>Choisir une photographie</div>
+    <div class="step"><strong>2 · Pixeliser</strong>Définir la taille et la palette</div>
+    <div class="step"><strong>3 · Découper</strong>Créer les carrés de construction</div>
+    <div class="step"><strong>4 · Construire</strong>Consulter les plans et inventaires</div>
+  </nav>
+
+  <div class="layout">
+    <aside class="panel controls">
+      <h2>Paramètres du projet</h2>
+      <label for="fichier-image">Photographie</label>
+      <input id="fichier-image" type="file" accept="image/png,image/jpeg,image/webp">
+      <p class="help">Image traitée localement dans le navigateur : aucun envoi sur un serveur.</p>
+
+      <h3>Dimensions de la mosaïque</h3>
+      <div class="field-grid">
+        <div><label for="largeur-image">Largeur (pixels)</label><input id="largeur-image" type="number" min="8" max="240" value="96"></div>
+        <div><label for="hauteur-image">Hauteur (pixels)</label><input id="hauteur-image" type="number" min="8" max="240" value="64"></div>
+      </div>
+      <label><input id="conserver-proportions" type="checkbox" checked> Conserver les proportions (ajustement avec bandes)</label>
+
+      <h3>Palette de couleurs</h3>
+      <label for="palette-lego">Palette</label>
+      <select id="palette-lego">
+        <option value="base">Palette de démonstration (12 couleurs)</option>
+      </select>
+      <p class="help">Palette illustrative : noms, références et disponibilités à vérifier avant fabrication.</p>
+
+      <h3>Découpage</h3>
+      <label for="taille-carre">Côté d'un carré (pixels)</label>
+      <select id="taille-carre">
+        <option>8</option><option selected>16</option><option>24</option><option>32</option>
+      </select>
+      <div class="actions">
+        <button id="bouton-convertir" class="btn primary" disabled>Générer la mosaïque</button>
+        <button id="bouton-reinitialiser" class="btn">Réinitialiser</button>
+      </div>
+      <div id="message-etat" class="status" role="status">Importez une photographie pour commencer.</div>
+    </aside>
+
+    <section class="workspace">
+      <div class="workspace-head">
+        <h2>Prévisualisation</h2>
+        <div class="tabs" role="tablist" aria-label="Vues de l'image">
+          <button class="tab" data-vue="originale" aria-selected="false">Originale</button>
+          <button class="tab" data-vue="pixelisee" aria-selected="true">Pixel art</button>
+          <button class="tab" data-vue="decoupee" aria-selected="false">Découpage</button>
+        </div>
+      </div>
+      <div class="preview-grid">
+        <article class="preview-card">
+          <h3>Photographie importée</h3>
+          <div class="canvas-wrap" id="zone-originale"><div class="placeholder">Aucune photographie importée</div><canvas id="canvas-original" hidden></canvas></div>
+          <p class="preview-meta" id="meta-originale">Formats acceptés : JPG, PNG, WebP.</p>
+        </article>
+        <article class="preview-card">
+          <h3 id="titre-apercu">Résultat pixel art</h3>
+          <div class="canvas-wrap" id="zone-resultat"><div class="placeholder">Le résultat apparaîtra ici</div><canvas id="canvas-resultat" hidden></canvas></div>
+          <p class="preview-meta" id="meta-resultat">Aucune conversion effectuée.</p>
+        </article>
+      </div>
+
+      <section class="panel results">
+        <div class="results-head">
+          <div><h2>Carrés de construction</h2><div class="summary" id="resume-resultats">Aucun carré généré.</div></div>
+          <div class="actions"><button id="bouton-imprimer" class="btn" disabled>Imprimer la fiche sélectionnée</button><button id="bouton-imprimer-tout" class="btn" disabled>Imprimer toutes les fiches</button></div>
+        </div>
+        <div class="result-layout">
+          <div>
+            <div id="liste-carres" class="empty">Les carrés apparaîtront après la génération de la mosaïque.</div>
+          </div>
+          <article class="detail" id="detail-carre">
+            <div class="empty">Sélectionnez un carré pour afficher son plan et son inventaire.</div>
+          </article>
+        </div>
+      </section>
+    </section>
+  </div>
+  <footer>
+    Prototype pédagogique : les couleurs et références sont des données de démonstration. La version de production devra intégrer une palette documentée et vérifier la disponibilité des pièces choisies.
+  </footer>
+</main>
+
+<script>
+"use strict";
+
+/* Données de démonstration. À remplacer par une palette LEGO vérifiée.
+   Chaque couleur possède un nom, une référence interne et ses composantes RGB. */
+const PALETTE = [
+  { nom:"White", reference:"01", hex:"#F4F4F4", rouge:244, vert:244, bleu:244 },
+  { nom:"Black", reference:"26", hex:"#1B2A34", rouge:27, vert:42, bleu:52 },
+  { nom:"Bright Red", reference:"21", hex:"#C91A09", rouge:201, vert:26, bleu:9 },
+  { nom:"Bright Blue", reference:"23", hex:"#0055BF", rouge:0, vert:85, bleu:191 },
+  { nom:"Bright Yellow", reference:"24", hex:"#F2CD37", rouge:242, vert:205, bleu:55 },
+  { nom:"Bright Green", reference:"37", hex:"#4B9F4A", rouge:75, vert:159, bleu:74 },
+  { nom:"Dark Bluish Gray", reference:"85", hex:"#6C6E68", rouge:108, vert:110, bleu:104 },
+  { nom:"Light Bluish Gray", reference:"86", hex:"#A0A5A9", rouge:160, vert:165, bleu:169 },
+  { nom:"Bright Orange", reference:"106", hex:"#FE8A18", rouge:254, vert:138, bleu:24 },
+  { nom:"Medium Nougat", reference:"312", hex:"#AA7D55", rouge:170, vert:125, bleu:85 },
+  { nom:"Dark Green", reference:"28", hex:"#184632", rouge:24, vert:70, bleu:50 },
+  { nom:"Dark Red", reference:"154", hex:"#720E0F", rouge:114, vert:14, bleu:15 }
+];
+
+const $ = id => document.getElementById(id);
+const fichier = $("fichier-image");
+const canvasOriginal = $("canvas-original");
+const canvasResultat = $("canvas-resultat");
+const ctxOriginal = canvasOriginal.getContext("2d", {willReadFrequently:true});
+const ctxResultat = canvasResultat.getContext("2d");
+let imageChargee = null;
+let matricePixels = null;
+let carres = [];
+let carreSelectionne = null;
+let vueActive = "pixelisee";
+
+function afficherMessage(texte, erreur=false) {
+  const zone = $("message-etat");
+  zone.textContent = texte;
+  zone.classList.toggle("error", erreur);
+}
+function afficherCanvas(canvas, zone, visible) {
+  const placeholder = zone.querySelector(".placeholder");
+  canvas.hidden = !visible;
+  if (placeholder) placeholder.hidden = visible;
+}
+function validerDimensions() {
+  const largeur = Number($("largeur-image").value);
+  const hauteur = Number($("hauteur-image").value);
+  if (!Number.isInteger(largeur) || !Number.isInteger(hauteur) ||
+      largeur < 8 || hauteur < 8 || largeur > 240 || hauteur > 240) {
+    throw new Error("Les dimensions doivent être des entiers compris entre 8 et 240.");
+  }
+  return {largeur, hauteur};
+}
+function distanceCouleurs(a, b) {
+  const dr = a.rouge - b.rouge, dg = a.vert - b.vert, db = a.bleu - b.bleu;
+  return dr*dr + dg*dg + db*db;
+}
+function couleurLaPlusProche(r, g, b) {
+  let meilleure = PALETTE[0], distanceMin = Infinity;
+  const couleur = {rouge:r, vert:g, bleu:b};
+  for (const candidate of PALETTE) {
+    const distance = distanceCouleurs(couleur, candidate);
+    if (distance < distanceMin) { distanceMin = distance; meilleure = candidate; }
+  }
+  return meilleure;
+}
+function chargerFichier(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Impossible de lire cette image.")); };
+    img.src = url;
+  });
+}
+function afficherOriginale(img) {
+  const max = 900;
+  const facteur = Math.min(1, max / img.width, max / img.height);
+  canvasOriginal.width = Math.round(img.width * facteur);
+  canvasOriginal.height = Math.round(img.height * facteur);
+  ctxOriginal.clearRect(0,0,canvasOriginal.width,canvasOriginal.height);
+  ctxOriginal.drawImage(img,0,0,canvasOriginal.width,canvasOriginal.height);
+  afficherCanvas(canvasOriginal, $("zone-originale"), true);
+  $("meta-originale").textContent = `${img.width} × ${img.height} pixels`;
+}
+function produireMatrice(img, largeur, hauteur, conserver) {
+  const travail = document.createElement("canvas");
+  travail.width = largeur; travail.height = hauteur;
+  const ctx = travail.getContext("2d", {willReadFrequently:true});
+  ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0,0,largeur,hauteur);
+  if (conserver) {
+    const facteur = Math.min(largeur/img.width, hauteur/img.height);
+    const w = img.width*facteur, h = img.height*facteur;
+    ctx.drawImage(img,(largeur-w)/2,(hauteur-h)/2,w,h);
+  } else {
+    ctx.drawImage(img,0,0,largeur,hauteur);
+  }
+  const donnees = ctx.getImageData(0,0,largeur,hauteur).data;
+  const matrice = [];
+  for (let y=0; y<hauteur; y++) {
+    const ligne = [];
+    for (let x=0; x<largeur; x++) {
+      const i = (y*largeur+x)*4;
+      ligne.push(couleurLaPlusProche(donnees[i],donnees[i+1],donnees[i+2]));
+    }
+    matrice.push(ligne);
+  }
+  return matrice;
+}
+function afficherMatrice(matrice, canvas, afficherGrille=false, tailleCellule=8) {
+  const h = matrice.length, w = matrice[0].length;
+  canvas.width = w*tailleCellule; canvas.height = h*tailleCellule;
+  const ctx = canvas.getContext("2d");
+  ctx.imageSmoothingEnabled = false;
+  for (let y=0; y<h; y++) for (let x=0; x<w; x++) {
+    ctx.fillStyle = matrice[y][x].hex;
+    ctx.fillRect(x*tailleCellule,y*tailleCellule,tailleCellule,tailleCellule);
+  }
+  if (afficherGrille) {
+    ctx.strokeStyle = "rgba(20,25,30,.55)"; ctx.lineWidth = 1;
+    for (let x=0; x<=w; x+=tailleCellule) {
+      ctx.beginPath(); ctx.moveTo(x*tailleCellule+.5,0); ctx.lineTo(x*tailleCellule+.5,h*tailleCellule); ctx.stroke();
+    }
+    for (let y=0; y<=h; y+=tailleCellule) {
+      ctx.beginPath(); ctx.moveTo(0,y*tailleCellule+.5); ctx.lineTo(w*tailleCellule,y*tailleCellule+.5); ctx.stroke();
+    }
+  }
+}
+function decouperImage(matrice, taille) {
+  const hauteur = matrice.length, largeur = matrice[0].length;
+  const resultat = [];
+  let numero = 1;
+  for (let y=0; y<hauteur; y+=taille) {
+    for (let x=0; x<largeur; x+=taille) {
+      const pixels = [];
+      for (let yy=y; yy<Math.min(y+taille,hauteur); yy++) {
+        pixels.push(matrice[yy].slice(x,Math.min(x+taille,largeur)));
+      }
+      resultat.push({numero, x, y, largeur:pixels[0].length, hauteur:pixels.length, pixels});
+      numero++;
+    }
+  }
+  return resultat;
+}
+function calculerInventaire(carre) {
+  const compte = new Map();
+  for (const ligne of carre.pixels) for (const couleur of ligne) {
+    compte.set(couleur, (compte.get(couleur)||0)+1);
+  }
+  return [...compte.entries()].sort((a,b)=>a[0].nom.localeCompare(b[0].nom));
+}
+function afficherListeCarres() {
+  const zone = $("liste-carres");
+  zone.className = "tiles"; zone.innerHTML = "";
+  for (const carre of carres) {
+    const bouton = document.createElement("button");
+    bouton.className = "tile" + (carre === carreSelectionne ? " selected" : "");
+    bouton.type = "button";
+    bouton.setAttribute("aria-label",`Sélectionner le carré ${carre.numero}`);
+    const mini = document.createElement("canvas");
+    afficherMatrice(carre.pixels, mini, false, 4);
+    const titre = document.createElement("strong");
+    titre.textContent = `Carré ${carre.numero}`;
+    const sousTitre = document.createElement("small");
+    sousTitre.textContent = `${carre.largeur} × ${carre.hauteur} · (${carre.x}, ${carre.y})`;
+    bouton.append(mini,titre,sousTitre);
+    bouton.addEventListener("click",()=>{carreSelectionne=carre; afficherListeCarres(); afficherDetailCarre();});
+    zone.append(bouton);
+  }
+}
+function afficherDetailCarre() {
+  const zone = $("detail-carre");
+  if (!carreSelectionne) { zone.innerHTML='<div class="empty">Sélectionnez un carré.</div>'; return; }
+  zone.innerHTML = "";
+  const entete = document.createElement("div"); entete.className="detail-top";
+  const titre = document.createElement("h3"); titre.textContent=`Carré ${carreSelectionne.numero}`;
+  const position = document.createElement("span"); position.className="help";
+  position.textContent=`Position : ${carreSelectionne.x}, ${carreSelectionne.y}`;
+  entete.append(titre,position);
+  const plan = document.createElement("canvas");
+  afficherMatrice(carreSelectionne.pixels,plan,true,18);
+  const titreInv = document.createElement("h3"); titreInv.textContent="Inventaire des pièces";
+  const table = document.createElement("table");
+  table.innerHTML="<thead><tr><th>Couleur</th><th>Réf. démo</th><th>Quantité</th></tr></thead>";
+  const tbody=document.createElement("tbody");
+  for (const [couleur,quantite] of calculerInventaire(carreSelectionne)) {
+    const tr=document.createElement("tr");
+    const tdCouleur=document.createElement("td");
+    const swatch=document.createElement("span"); swatch.className="swatch"; swatch.style.backgroundColor=couleur.hex;
+    tdCouleur.append(swatch,document.createTextNode(couleur.nom));
+    const tdRef=document.createElement("td"); tdRef.textContent=couleur.reference;
+    const tdQte=document.createElement("td"); tdQte.textContent=quantite;
+    tr.append(tdCouleur,tdRef,tdQte); tbody.append(tr);
+  }
+  table.append(tbody);
+  const total=document.createElement("p"); total.className="help";
+  total.textContent=`Total : ${carreSelectionne.largeur*carreSelectionne.hauteur} pixel(s) / pièce(s).`;
+  zone.append(entete,plan,titreInv,table,total);
+}
+function mettreAJourApercu() {
+  if (!matricePixels) return;
+  const taille = 5;
+  if (vueActive==="decoupee") {
+    afficherMatrice(matricePixels,canvasResultat,true,taille);
+    const ctx=canvasResultat.getContext("2d");
+    const cote=Number($("taille-carre").value)*taille;
+    ctx.strokeStyle="#111"; ctx.lineWidth=2;
+    for(let x=0;x<=matricePixels[0].length;x+=Number($("taille-carre").value)) {
+      ctx.beginPath();ctx.moveTo(x*taille,0);ctx.lineTo(x*taille,matricePixels.length*taille);ctx.stroke();
+    }
+    for(let y=0;y<=matricePixels.length;y+=Number($("taille-carre").value)) {
+      ctx.beginPath();ctx.moveTo(0,y*taille);ctx.lineTo(matricePixels[0].length*taille,y*taille);ctx.stroke();
+    }
+    $("titre-apercu").textContent="Image et découpage";
+  } else {
+    afficherMatrice(matricePixels,canvasResultat,false,taille);
+    $("titre-apercu").textContent="Résultat pixel art";
+  }
+  afficherCanvas(canvasResultat,$("zone-resultat"),true);
+  $("meta-resultat").textContent=`${matricePixels[0].length} × ${matricePixels.length} pixels · ${PALETTE.length} couleurs disponibles`;
+}
+function generer() {
+  try {
+    if (!imageChargee) throw new Error("Importez d'abord une photographie.");
+    const {largeur,hauteur}=validerDimensions();
+    matricePixels=produireMatrice(imageChargee,largeur,hauteur,$("conserver-proportions").checked);
+    carres=decouperImage(matricePixels,Number($("taille-carre").value));
+    carreSelectionne=carres[0]||null;
+    mettreAJourApercu(); afficherListeCarres(); afficherDetailCarre();
+    $("resume-resultats").textContent=`${carres.length} carré(s) · ${largeur} × ${hauteur} pixels · côté ${$("taille-carre").value}`;
+    $("bouton-imprimer").disabled=!carreSelectionne;
+    $("bouton-imprimer-tout").disabled=!carres.length;
+    afficherMessage("Mosaïque générée. Sélectionnez un carré pour consulter sa fiche.");
+    document.querySelectorAll(".step").forEach((s,i)=>s.classList.toggle("active",i<4));
+  } catch (e) { afficherMessage(e.message,true); }
+}
+fichier.addEventListener("change",async()=>{
+  const file=fichier.files[0]; if(!file) return;
+  if(!/^image\/(jpeg|png|webp)$/.test(file.type)) { afficherMessage("Format non accepté. Choisissez une image JPG, PNG ou WebP.",true); return; }
+  try {
+    imageChargee=await chargerFichier(file); afficherOriginale(imageChargee);
+    $("bouton-convertir").disabled=false;
+    matricePixels=null; carres=[]; carreSelectionne=null;
+    $("liste-carres").className="empty"; $("liste-carres").textContent="Cliquez sur « Générer la mosaïque » pour créer les carrés.";
+    $("detail-carre").innerHTML='<div class="empty">Aucun carré généré.</div>';
+    $("resume-resultats").textContent="Photographie prête à être convertie.";
+    $("bouton-imprimer").disabled=true; $("bouton-imprimer-tout").disabled=true;
+    afficherMessage(`Image chargée : ${file.name}`);
+  } catch(e) { afficherMessage(e.message,true); }
+});
+$("bouton-convertir").addEventListener("click",generer);
+$("taille-carre").addEventListener("change",()=>{if(matricePixels) generer();});
+$("bouton-reinitialiser").addEventListener("click",()=>{
+  fichier.value=""; imageChargee=null; matricePixels=null; carres=[]; carreSelectionne=null;
+  canvasOriginal.hidden=true; canvasResultat.hidden=true;
+  $("zone-originale").querySelector(".placeholder").hidden=false;
+  $("zone-resultat").querySelector(".placeholder").hidden=false;
+  $("meta-originale").textContent="Formats acceptés : JPG, PNG, WebP.";
+  $("meta-resultat").textContent="Aucune conversion effectuée.";
+  $("liste-carres").className="empty"; $("liste-carres").textContent="Les carrés apparaîtront après la génération de la mosaïque.";
+  $("detail-carre").innerHTML='<div class="empty">Sélectionnez un carré pour afficher son plan et son inventaire.</div>';
+  $("resume-resultats").textContent="Aucun carré généré.";
+  $("bouton-convertir").disabled=true; $("bouton-imprimer").disabled=true; $("bouton-imprimer-tout").disabled=true;
+  afficherMessage("Importez une photographie pour commencer.");
+});
+document.querySelectorAll(".tab").forEach(tab=>tab.addEventListener("click",()=>{
+  vueActive=tab.dataset.vue;
+  document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",String(t===tab)));
+  mettreAJourApercu();
+}));
+$("bouton-imprimer").addEventListener("click",()=>{if(carreSelectionne) window.print();});
+$("bouton-imprimer-tout").addEventListener("click",()=>{
+  if(!carres.length) return;
+  const ancienne=carreSelectionne;
+  const zone=$("detail-carre");
+  const contenu=carres.map(c=>{
+    const inventaire=calculerInventaire(c).map(([couleur,q])=>`<tr><td><span style="display:inline-block;width:12px;height:12px;background:${couleur.hex};border:1px solid #777"></span> ${couleur.nom}</td><td>${couleur.reference}</td><td>${q}</td></tr>`).join("");
+    const cellules=c.pixels.map(l=>l.map(col=>`<td style="background:${col.hex};width:14px;height:14px;border:1px solid #555"></td>`).join("")).map(l=>`<tr>${l}</tr>`).join("");
+    return `<section style="page-break-after:always;padding:12mm"><h2>Carré ${c.numero} — position (${c.x}, ${c.y})</h2><table style="border-collapse:collapse;margin:15px 0">${cellules}</table><h3>Inventaire</h3><table>${inventaire}</table><p>Total : ${c.largeur*c.hauteur} pièces</p></section>`;
+  }).join("");
+  const fenetre=window.open("","_blank");
+  if(!fenetre){afficherMessage("Autorisez les fenêtres surgissantes pour imprimer toutes les fiches.",true);return;}
+  fenetre.document.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Fiches BrickPixel</title><style>body{font:14px Arial,sans-serif}table{border-collapse:collapse}td,th{padding:5px;border:1px solid #aaa}@media print{section{break-after:page}}</style></head><body>${contenu}<script>window.onload=()=>window.print();<\/script></body></html>`);
+  fenetre.document.close();
+});
+</script>
+</body>
+</html>
