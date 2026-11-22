@@ -1,115 +1,92 @@
-# 🧱 BrickPixel
+# BrickPixel 🧱
 
-**De la photographie à la mosaïque LEGO !**
+**Transformer une photographie en mosaïque LEGO, pixel après pixel !**
 
-BrickPixel est un projet collaboratif de développement informatique réalisé dans le cadre de l'enseignement de **Numérique et Sciences Informatiques (NSI)**.
+BrickPixel est un projet collaboratif réalisé dans le cadre de l'enseignement de **Numérique et Sciences Informatiques (NSI)** en classe de première.
 
-L'objectif est de développer une application web permettant de transformer une photographie en une mosaïque de type *pixel art*, composée de couleurs issues d'une palette de briques LEGO.
-
-Chaque mosaïque est ensuite découpée en plusieurs carrés indépendants. Pour chacun d'eux, l'application génère un plan de construction et un inventaire des pièces nécessaires.
-
-Le projet associe ainsi algorithmique, programmation web, traitement d'images et travail collaboratif.
-
----
+L'objectif est de développer une application web permettant de transformer une photographie en une mosaïque de briques LEGO. L'image est pixelisée à partir d'une palette de couleurs, puis découpée en tuiles indépendantes. Chaque tuile peut ensuite être construite séparément à l'aide d'un plan de montage et d'un inventaire des pièces nécessaires.
 
 ## 🎯 Objectifs du projet
 
-Développer une application permettant de :
+BrickPixel est à la fois un projet informatique et un projet de construction collective.
 
-- importer une photographie depuis son ordinateur ;
-- choisir les dimensions de l'image finale ;
-- convertir la photographie en une image pixel art ;
-- remplacer chaque pixel par la couleur LEGO la plus proche dans une palette prédéfinie ;
-- visualiser le résultat et son découpage ;
-- diviser la mosaïque en carrés de dimensions paramétrables ;
-- générer pour chaque carré un plan de construction ;
-- calculer automatiquement le nombre de pièces nécessaires pour chaque couleur ;
-- exporter et imprimer les fiches individuelles de construction.
+Il permet notamment de travailler sur :
+- La programmation en JavaScript ;
+- La manipulation et le traitement d'images numériques ;
+- Les structures de données ;
+- Les algorithmes de comparaison et de traitement des couleurs ;
+- La conception d'une interface web avec HTML et CSS ;
+- Le travail collaboratif et la gestion d'un projet informatique avec Git et GitHub.
 
-À terme, les différentes fiches permettront à plusieurs participants de construire simultanément les différentes parties d'une même mosaïque.
+À terme, chaque élève pourra prendre en charge la construction d'une ou plusieurs tuiles. L'assemblage de toutes les réalisations permettra de reconstituer l'image initiale sous la forme d'une grande mosaïque.
 
-## 🖥️ Fonctionnement envisagé
+## ⚙️ Fonctionnement
 
-Le fonctionnement de BrickPixel s'articule autour de quatre grandes étapes.
+L'application doit permettre de suivre plusieurs étapes.
 
-### 1. Importation et préparation de l'image
+### 1. Importation d'une image
 
-L'utilisateur importe une photographie et définit les dimensions de la mosaïque souhaitée.
+L'utilisateur importe une photographie depuis son ordinateur.
 
-L'application prépare alors une version redimensionnée de l'image.
+### 2. Pixelisation
 
-### 2. Conversion en pixel art
+L'image est redimensionnée selon les dimensions choisies par l'utilisateur, puis transformée en pixel art.
 
-Chaque pixel est associé à la couleur LEGO disponible la plus proche.
+Chaque pixel est associé à la couleur LEGO la plus proche parmi celles disponibles dans la palette retenue.
 
-La palette de couleurs constitue une donnée centrale de l'application.
+### 3. Découpage en tuiles
 
-### 3. Découpage de la mosaïque
+L'image pixelisée est découpée en plusieurs tuiles de dimensions définies par l'utilisateur.
 
-L'image obtenue est découpée en carrés de dimensions paramétrables.
+Chaque tuile constitue une partie autonome de la mosaïque et possède ses propres coordonnées dans l'image globale.
 
-Chaque carré possède une position dans la mosaïque complète et peut être traité indépendamment.
+### 4. Génération des plans et des inventaires
 
-### 4. Génération des plans de construction
+Pour chaque tuile, l'application doit générer :
+- Un plan de construction indiquant la position et la couleur de chaque pièce ;
+- Un inventaire détaillé des briques nécessaires, regroupées par couleur ;
+- Une fiche de construction pouvant être imprimée.
 
-Pour chaque carré, l'application génère :
-- une représentation quadrillée du pixel art ;
-- une légende des couleurs utilisées ;
-- un inventaire des pièces nécessaires ;
-- une fiche destinée à être imprimée et distribuée à un participant.
+L'objectif final est de permettre à chaque participant de construire sa tuile indépendamment des autres.
 
 ## 🛠️ Technologies utilisées
 
 Le projet repose sur des technologies web standards :
 
-| Technologie | Utilisation |
-|---|---|
-| HTML5 | Structure de l'application |
-| CSS3 | Mise en forme et présentation |
-| JavaScript | Algorithmes et interactions |
-| Canvas API | Manipulation et affichage des images |
-| Git / GitHub | Gestion du code et travail collaboratif |
+- **HTML5** : structure de l'application ;
+- **CSS3** : mise en forme et présentation ;
+- **JavaScript** : traitement des images, algorithmes et interactions ;
+- **Canvas** : manipulation et affichage des images ;
+- **Git et GitHub** : gestion du code source et travail collaboratif.
 
-Aucune installation particulière n'est nécessaire pour utiliser l'application : un navigateur web récent suffit.
+Aucune installation particulière n'est nécessaire pour utiliser le prototype.
 
 ## 🚀 Utilisation
 
 ### Lancer l'application
 
-1. Cloner le dépôt ou télécharger les fichiers du projet.
+1. Télécharger le dépôt ou le cloner avec Git.
 2. Ouvrir le fichier `index.html` dans un navigateur web récent.
-3. Importer une photographie.
-4. Choisir les dimensions de la mosaïque.
-5. Sélectionner la taille des carrés.
-6. Générer la mosaïque.
-7. Sélectionner un carré pour consulter son plan et son inventaire.
+3. Importer une photographie et commencer à utiliser les fonctionnalités disponibles.
 
-L'application fonctionne directement dans le navigateur. Les photographies sont traitées localement et ne sont pas envoyées vers un serveur.
+Le traitement des images est effectué directement dans le navigateur : aucune photographie n'est envoyée vers un serveur.
 
-### Hébergement
+### Accéder à l'application en ligne
 
-L'application pourra également être hébergée gratuitement avec GitHub Pages afin d'être accessible depuis n'importe quel appareil connecté à Internet.
+Une version hébergée pourra être proposée grâce à **GitHub Pages**.
 
-## 📂 Organisation du projet
+## 📁 Organisation du projet
 
-L'organisation initiale du dépôt est volontairement simple :
+Le prototype initial regroupe volontairement le HTML, le CSS et le JavaScript dans un unique fichier `index.html`, afin de faciliter sa prise en main.
+
+À mesure que le projet se développera, le code pourra être organisé en plusieurs fichiers et dossiers :
 
 ```text
 BrickPixel/
 │
 ├── index.html
-│
 ├── README.md
-│
-└── LICENSE
-```
-
-Au fur et à mesure du développement, le code sera progressivement organisé en plusieurs fichiers afin de séparer les différentes responsabilités :
-
-```text
-BrickPixel/
-│
-├── index.html
+├── LICENSE
 │
 ├── css/
 │   └── style.css
@@ -124,54 +101,46 @@ BrickPixel/
 │   ├── inventaire.js
 │   └── exportation.js
 │
-├── data/
-│   └── palette-lego.js
-│
-├── README.md
-└── LICENSE
+└── data/
+    └── palette-lego.js
 ```
 
-## 👩‍💻 Un projet collaboratif
+Cette organisation permettra de répartir le développement entre plusieurs groupes, chacun pouvant travailler sur une fonctionnalité bien identifiée.
+
+## 🤝 Un projet collaboratif
 
 BrickPixel est développé collectivement par les élèves de NSI.
 
-Le développement est organisé en petites tâches indépendantes, réparties entre différents groupes de travail.
+Chaque participant contribue à une partie du projet : conception de l'interface, traitement des images, gestion des couleurs, découpage en tuiles, génération des inventaires ou encore tests.
 
-Les objectifs sont notamment de mettre en pratique :
-- la conception d'une application informatique ;
-- la décomposition d'un problème complexe en sous-problèmes ;
-- la programmation modulaire ;
-- la manipulation de structures de données ;
-- la conception et l'utilisation d'algorithmes ;
-- les tests et la validation d'un programme ;
-- le travail collaboratif avec Git et GitHub.
-
-Le dépôt évoluera progressivement au fil des contributions des participants.
+Le dépôt GitHub permet de centraliser le travail, de suivre les évolutions du code et de faciliter l'intégration des différentes contributions.
 
 ## 📌 État du projet
 
-**Version actuelle : prototype fonctionnel (0.1)**
+Le projet est actuellement au stade du prototype fonctionnel.
 
-Le prototype permet déjà d'importer une photographie, de la convertir en pixel art à l'aide d'une palette de démonstration, de découper l'image en carrés et de générer des inventaires.
+Les principales fonctionnalités déjà présentes sont :
+- L'importation d'une photographie ;
+- Le redimensionnement de l'image ;
+- La conversion en pixel art ;
+- L'association des pixels à une palette de couleurs ;
+- Le découpage de l'image en tuiles ;
+- La sélection et la visualisation d'une tuile ;
+- L'affichage d'un inventaire des pièces ;
+- L'impression des fiches de construction.
 
-Les prochaines étapes porteront notamment sur :
-- la constitution d'une palette LEGO documentée ;
-- l'amélioration des algorithmes de traitement des images ;
-- la séparation du code en modules ;
-- la conception définitive des fiches de construction ;
-- l'intégration des différentes fonctionnalités ;
-- la validation de l'application complète.
+La palette de couleurs actuellement utilisée est illustrative. Les références et la disponibilité des pièces devront être vérifiées avant toute réalisation physique.
 
-Certaines fonctionnalités et données sont encore provisoires.
+De nombreuses améliorations restent possibles, tant sur le plan informatique que sur celui de l'expérience utilisateur.
 
-## 📜 Licence
+## 📄 Licence
 
-Ce projet est distribué sous licence MIT.
+Ce projet est distribué sous licence MIT. Voir le fichier `LICENSE` pour plus d'informations.
 
-La licence autorise notamment l'utilisation, la modification et la redistribution du code, sous réserve de conserver les mentions de copyright et de licence.
+Les photographies, ressources graphiques et données externes éventuellement utilisées dans le projet restent soumises à leurs propres conditions d'utilisation.
 
-Voir le fichier [LICENSE](LICENSE).
+BrickPixel est un projet pédagogique indépendant, sans affiliation avec le groupe LEGO.
 
 ---
 
-**BrickPixel — Un projet de NSI où le code prend forme, pixel après pixel !**
+**BrickPixel — Un projet de NSI où le code prend forme, tuile après tuile !**
