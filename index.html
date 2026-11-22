@@ -109,7 +109,7 @@ footer { color:var(--muted); font-size:.78rem; margin-top:20px; }
   <nav class="steps" aria-label="Étapes du projet">
     <div class="step active"><strong>1 · Importer</strong>Choisir une photographie</div>
     <div class="step"><strong>2 · Pixeliser</strong>Définir la taille et la palette</div>
-    <div class="step"><strong>3 · Découper</strong>Créer les carrés de construction</div>
+    <div class="step"><strong>3 · Découper</strong>Créer les tuiles de construction</div>
     <div class="step"><strong>4 · Construire</strong>Consulter les plans et inventaires</div>
   </nav>
 
@@ -135,8 +135,8 @@ footer { color:var(--muted); font-size:.78rem; margin-top:20px; }
       <p class="help">Palette illustrative : noms, références et disponibilités à vérifier avant fabrication.</p>
 
       <h3>Découpage</h3>
-      <label for="taille-carre">Côté d'un carré (pixels)</label>
-      <select id="taille-carre">
+      <label for="taille-tuile">Côté d'une tuile (pixels)</label>
+      <select id="taille-tuile">
         <option>8</option><option selected>16</option><option>24</option><option>32</option>
       </select>
       <div class="actions">
@@ -170,15 +170,15 @@ footer { color:var(--muted); font-size:.78rem; margin-top:20px; }
 
       <section class="panel results">
         <div class="results-head">
-          <div><h2>Carrés de construction</h2><div class="summary" id="resume-resultats">Aucun carré généré.</div></div>
+          <div><h2>Tuiles de construction</h2><div class="summary" id="resume-resultats">Aucune tuile générée.</div></div>
           <div class="actions"><button id="bouton-imprimer" class="btn" disabled>Imprimer la fiche sélectionnée</button><button id="bouton-imprimer-tout" class="btn" disabled>Imprimer toutes les fiches</button></div>
         </div>
         <div class="result-layout">
           <div>
-            <div id="liste-carres" class="empty">Les carrés apparaîtront après la génération de la mosaïque.</div>
+            <div id="liste-tuiles" class="empty">Les tuiles apparaîtront après la génération de la mosaïque.</div>
           </div>
-          <article class="detail" id="detail-carre">
-            <div class="empty">Sélectionnez un carré pour afficher son plan et son inventaire.</div>
+          <article class="detail" id="detail-tuile">
+            <div class="empty">Sélectionnez une tuile pour afficher son plan et son inventaire.</div>
           </article>
         </div>
       </section>
@@ -217,8 +217,8 @@ const ctxOriginal = canvasOriginal.getContext("2d", {willReadFrequently:true});
 const ctxResultat = canvasResultat.getContext("2d");
 let imageChargee = null;
 let matricePixels = null;
-let carres = [];
-let carreSelectionne = null;
+let tuiles = [];
+let tuileSelectionnee = null;
 let vueActive = "pixelisee";
 
 function afficherMessage(texte, erreur=false) {
@@ -331,48 +331,48 @@ function decouperImage(matrice, taille) {
   }
   return resultat;
 }
-function calculerInventaire(carre) {
+function calculerInventaire(tuile) {
   const compte = new Map();
-  for (const ligne of carre.pixels) for (const couleur of ligne) {
+  for (const ligne of tuile.pixels) for (const couleur of ligne) {
     compte.set(couleur, (compte.get(couleur)||0)+1);
   }
   return [...compte.entries()].sort((a,b)=>a[0].nom.localeCompare(b[0].nom));
 }
-function afficherListeCarres() {
-  const zone = $("liste-carres");
+function afficherListeTuiles() {
+  const zone = $("liste-tuiles");
   zone.className = "tiles"; zone.innerHTML = "";
-  for (const carre of carres) {
+  for (const tuile of tuiles) {
     const bouton = document.createElement("button");
-    bouton.className = "tile" + (carre === carreSelectionne ? " selected" : "");
+    bouton.className = "tile" + (tuile === tuileSelectionnee ? " selected" : "");
     bouton.type = "button";
-    bouton.setAttribute("aria-label",`Sélectionner le carré ${carre.numero}`);
+    bouton.setAttribute("aria-label",`Sélectionner la tuile ${tuile.numero}`);
     const mini = document.createElement("canvas");
-    afficherMatrice(carre.pixels, mini, false, 4);
+    afficherMatrice(tuile.pixels, mini, false, 4);
     const titre = document.createElement("strong");
-    titre.textContent = `Carré ${carre.numero}`;
+    titre.textContent = `Tuile ${tuile.numero}`;
     const sousTitre = document.createElement("small");
-    sousTitre.textContent = `${carre.largeur} × ${carre.hauteur} · (${carre.x}, ${carre.y})`;
+    sousTitre.textContent = `${tuile.largeur} × ${tuile.hauteur} · (${tuile.x}, ${tuile.y})`;
     bouton.append(mini,titre,sousTitre);
-    bouton.addEventListener("click",()=>{carreSelectionne=carre; afficherListeCarres(); afficherDetailCarre();});
+    bouton.addEventListener("click",()=>{tuileSelectionnee=tuile; afficherListeTuiles(); afficherDetailTuile();});
     zone.append(bouton);
   }
 }
-function afficherDetailCarre() {
-  const zone = $("detail-carre");
-  if (!carreSelectionne) { zone.innerHTML='<div class="empty">Sélectionnez un carré.</div>'; return; }
+function afficherDetailTuile() {
+  const zone = $("detail-tuile");
+  if (!tuileSelectionnee) { zone.innerHTML='<div class="empty">Sélectionnez une tuile.</div>'; return; }
   zone.innerHTML = "";
   const entete = document.createElement("div"); entete.className="detail-top";
-  const titre = document.createElement("h3"); titre.textContent=`Carré ${carreSelectionne.numero}`;
+  const titre = document.createElement("h3"); titre.textContent=`Tuile ${tuileSelectionnee.numero}`;
   const position = document.createElement("span"); position.className="help";
-  position.textContent=`Position : ${carreSelectionne.x}, ${carreSelectionne.y}`;
+  position.textContent=`Position : ${tuileSelectionnee.x}, ${tuileSelectionnee.y}`;
   entete.append(titre,position);
   const plan = document.createElement("canvas");
-  afficherMatrice(carreSelectionne.pixels,plan,true,18);
+  afficherMatrice(tuileSelectionnee.pixels,plan,true,18);
   const titreInv = document.createElement("h3"); titreInv.textContent="Inventaire des pièces";
   const table = document.createElement("table");
   table.innerHTML="<thead><tr><th>Couleur</th><th>Réf. démo</th><th>Quantité</th></tr></thead>";
   const tbody=document.createElement("tbody");
-  for (const [couleur,quantite] of calculerInventaire(carreSelectionne)) {
+  for (const [couleur,quantite] of calculerInventaire(tuileSelectionnee)) {
     const tr=document.createElement("tr");
     const tdCouleur=document.createElement("td");
     const swatch=document.createElement("span"); swatch.className="swatch"; swatch.style.backgroundColor=couleur.hex;
@@ -383,7 +383,7 @@ function afficherDetailCarre() {
   }
   table.append(tbody);
   const total=document.createElement("p"); total.className="help";
-  total.textContent=`Total : ${carreSelectionne.largeur*carreSelectionne.hauteur} pixel(s) / pièce(s).`;
+  total.textContent=`Total : ${tuileSelectionnee.largeur*tuileSelectionnee.hauteur} pixel(s) / pièce(s).`;
   zone.append(entete,plan,titreInv,table,total);
 }
 function mettreAJourApercu() {
@@ -392,12 +392,12 @@ function mettreAJourApercu() {
   if (vueActive==="decoupee") {
     afficherMatrice(matricePixels,canvasResultat,true,taille);
     const ctx=canvasResultat.getContext("2d");
-    const cote=Number($("taille-carre").value)*taille;
+    const cote=Number($("taille-tuile").value)*taille;
     ctx.strokeStyle="#111"; ctx.lineWidth=2;
-    for(let x=0;x<=matricePixels[0].length;x+=Number($("taille-carre").value)) {
+    for(let x=0;x<=matricePixels[0].length;x+=Number($("taille-tuile").value)) {
       ctx.beginPath();ctx.moveTo(x*taille,0);ctx.lineTo(x*taille,matricePixels.length*taille);ctx.stroke();
     }
-    for(let y=0;y<=matricePixels.length;y+=Number($("taille-carre").value)) {
+    for(let y=0;y<=matricePixels.length;y+=Number($("taille-tuile").value)) {
       ctx.beginPath();ctx.moveTo(0,y*taille);ctx.lineTo(matricePixels[0].length*taille,y*taille);ctx.stroke();
     }
     $("titre-apercu").textContent="Image et découpage";
@@ -413,13 +413,13 @@ function generer() {
     if (!imageChargee) throw new Error("Importez d'abord une photographie.");
     const {largeur,hauteur}=validerDimensions();
     matricePixels=produireMatrice(imageChargee,largeur,hauteur,$("conserver-proportions").checked);
-    carres=decouperImage(matricePixels,Number($("taille-carre").value));
-    carreSelectionne=carres[0]||null;
-    mettreAJourApercu(); afficherListeCarres(); afficherDetailCarre();
-    $("resume-resultats").textContent=`${carres.length} carré(s) · ${largeur} × ${hauteur} pixels · côté ${$("taille-carre").value}`;
-    $("bouton-imprimer").disabled=!carreSelectionne;
-    $("bouton-imprimer-tout").disabled=!carres.length;
-    afficherMessage("Mosaïque générée. Sélectionnez un carré pour consulter sa fiche.");
+    tuiles=decouperImage(matricePixels,Number($("taille-tuile").value));
+    tuileSelectionnee=tuiles[0]||null;
+    mettreAJourApercu(); afficherListeTuiles(); afficherDetailTuile();
+    $("resume-resultats").textContent=`${tuiles.length} tuile(s) · ${largeur} × ${hauteur} pixels · côté ${$("taille-tuile").value}`;
+    $("bouton-imprimer").disabled=!tuileSelectionnee;
+    $("bouton-imprimer-tout").disabled=!tuiles.length;
+    afficherMessage("Mosaïque générée. Sélectionnez une tuile pour consulter sa fiche.");
     document.querySelectorAll(".step").forEach((s,i)=>s.classList.toggle("active",i<4));
   } catch (e) { afficherMessage(e.message,true); }
 }
@@ -429,26 +429,26 @@ fichier.addEventListener("change",async()=>{
   try {
     imageChargee=await chargerFichier(file); afficherOriginale(imageChargee);
     $("bouton-convertir").disabled=false;
-    matricePixels=null; carres=[]; carreSelectionne=null;
-    $("liste-carres").className="empty"; $("liste-carres").textContent="Cliquez sur « Générer la mosaïque » pour créer les carrés.";
-    $("detail-carre").innerHTML='<div class="empty">Aucun carré généré.</div>';
+    matricePixels=null; tuiles=[]; tuileSelectionnee=null;
+    $("liste-tuiles").className="empty"; $("liste-tuiles").textContent="Cliquez sur « Générer la mosaïque » pour créer les tuiles.";
+    $("detail-tuile").innerHTML='<div class="empty">Aucune tuile générée.</div>';
     $("resume-resultats").textContent="Photographie prête à être convertie.";
     $("bouton-imprimer").disabled=true; $("bouton-imprimer-tout").disabled=true;
     afficherMessage(`Image chargée : ${file.name}`);
   } catch(e) { afficherMessage(e.message,true); }
 });
 $("bouton-convertir").addEventListener("click",generer);
-$("taille-carre").addEventListener("change",()=>{if(matricePixels) generer();});
+$("taille-tuile").addEventListener("change",()=>{if(matricePixels) generer();});
 $("bouton-reinitialiser").addEventListener("click",()=>{
-  fichier.value=""; imageChargee=null; matricePixels=null; carres=[]; carreSelectionne=null;
+  fichier.value=""; imageChargee=null; matricePixels=null; tuiles=[]; tuileSelectionnee=null;
   canvasOriginal.hidden=true; canvasResultat.hidden=true;
   $("zone-originale").querySelector(".placeholder").hidden=false;
   $("zone-resultat").querySelector(".placeholder").hidden=false;
   $("meta-originale").textContent="Formats acceptés : JPG, PNG, WebP.";
   $("meta-resultat").textContent="Aucune conversion effectuée.";
-  $("liste-carres").className="empty"; $("liste-carres").textContent="Les carrés apparaîtront après la génération de la mosaïque.";
-  $("detail-carre").innerHTML='<div class="empty">Sélectionnez un carré pour afficher son plan et son inventaire.</div>';
-  $("resume-resultats").textContent="Aucun carré généré.";
+  $("liste-tuiles").className="empty"; $("liste-tuiles").textContent="Les tuiles apparaîtront après la génération de la mosaïque.";
+  $("detail-tuile").innerHTML='<div class="empty">Sélectionnez une tuile pour afficher son plan et son inventaire.</div>';
+  $("resume-resultats").textContent="Aucune tuile générée.";
   $("bouton-convertir").disabled=true; $("bouton-imprimer").disabled=true; $("bouton-imprimer-tout").disabled=true;
   afficherMessage("Importez une photographie pour commencer.");
 });
@@ -457,15 +457,15 @@ document.querySelectorAll(".tab").forEach(tab=>tab.addEventListener("click",()=>
   document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",String(t===tab)));
   mettreAJourApercu();
 }));
-$("bouton-imprimer").addEventListener("click",()=>{if(carreSelectionne) window.print();});
+$("bouton-imprimer").addEventListener("click",()=>{if(tuileSelectionnee) window.print();});
 $("bouton-imprimer-tout").addEventListener("click",()=>{
-  if(!carres.length) return;
-  const ancienne=carreSelectionne;
-  const zone=$("detail-carre");
-  const contenu=carres.map(c=>{
+  if(!tuiles.length) return;
+  const ancienne=tuileSelectionnee;
+  const zone=$("detail-tuile");
+  const contenu=tuiles.map(c=>{
     const inventaire=calculerInventaire(c).map(([couleur,q])=>`<tr><td><span style="display:inline-block;width:12px;height:12px;background:${couleur.hex};border:1px solid #777"></span> ${couleur.nom}</td><td>${couleur.reference}</td><td>${q}</td></tr>`).join("");
     const cellules=c.pixels.map(l=>l.map(col=>`<td style="background:${col.hex};width:14px;height:14px;border:1px solid #555"></td>`).join("")).map(l=>`<tr>${l}</tr>`).join("");
-    return `<section style="page-break-after:always;padding:12mm"><h2>Carré ${c.numero} — position (${c.x}, ${c.y})</h2><table style="border-collapse:collapse;margin:15px 0">${cellules}</table><h3>Inventaire</h3><table>${inventaire}</table><p>Total : ${c.largeur*c.hauteur} pièces</p></section>`;
+    return `<section style="page-break-after:always;padding:12mm"><h2>Tuile ${c.numero} — position (${c.x}, ${c.y})</h2><table style="border-collapse:collapse;margin:15px 0">${cellules}</table><h3>Inventaire</h3><table>${inventaire}</table><p>Total : ${c.largeur*c.hauteur} pièces</p></section>`;
   }).join("");
   const fenetre=window.open("","_blank");
   if(!fenetre){afficherMessage("Autorisez les fenêtres surgissantes pour imprimer toutes les fiches.",true);return;}
